@@ -70,7 +70,7 @@ jobs:
         run: |
           echo "🚀 开始批量编译 V1 SRS 二进制文件..."
           # 循环查找所有生成的 .v1.json 文件
-          find geo geo-lite -name "*.v1.json" | while read -r json_file; do
+          find asn geo geo-lite -name "*.v1.json" | while read -r json_file; do
             # 构造输出的 srs 文件路径，例如：cn.v1.json -> cn.v1.srs
             srs_file="${json_file%.json}.srs"
             # 使用 1.9.4 内核执行编译命令

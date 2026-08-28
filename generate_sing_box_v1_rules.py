@@ -6,7 +6,8 @@ TARGET_DIRS = [
     os.path.join("geo", "geosite"),
     os.path.join("geo", "geoip"),
     os.path.join("geo-lite", "geosite"),
-    os.path.join("geo-lite", "geoip")
+    os.path.join("geo-lite", "geoip"),
+    os.path.join("asn")
 ]
 
 # 1.9.3 版本 sing-box 不支持的 V2 新匹配字段
