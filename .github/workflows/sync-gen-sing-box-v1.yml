@@ -61,7 +61,13 @@ jobs:
           # 如果该分支在远程已存在，它会覆盖；如果不存在，它会创建
           git checkout -b sing-box-v1-compat
 
-          # 检查是否有文件发生变化（包括新同步的文件和新生成的 .v1.json）
+          # 🚀 【核心改动】在提交前，彻底将 Python 脚本从当前工作区和 Git 暂存区中移除
+          if [ -f "generate_sing_box_v1_rules.py" ]; then
+            git rm -f generate_sing_box_v1_rules.py
+            echo "🗑️ 已将自动化脚本移出发布队列"
+          fi
+
+          # 检查是否有剩余的文件发生变化（即只有同步过来的规则和新生成的 .v1.json 文件）
           if [ -n "$(git status --porcelain)" ]; then
             git add .
             git commit -m "chore: 自动同步 MetaCubeX 官方更新并生成 v1 兼容规则集"
