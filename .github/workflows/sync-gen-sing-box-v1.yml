@@ -34,20 +34,27 @@ jobs:
           # 强制将当前工作区和代码树对齐到官方的最新 sing 分支
           git reset --hard upstream/sing
 
-      # 第三步：设置 Python 环境
+      # 第三步：【关键修复】从你自己的远程 sing 分支把 Python 脚本单独“捞”回来
+      - name: Restore Python Script from origin
+        run: |
+          # 从你自己的 origin/sing 分支中单独把脚本文件检出到当前工作区
+          git checkout origin/sing -- generate_sing_box_v1_rules.py
+          echo "✅ 成功从 origin/sing 恢复脚本文件！"
+
+      # 第四步：设置 Python 环境
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      # 第四步：运行你的 V1 规则生成脚本
+      # 第五步：运行你的 V1 规则生成脚本
       - name: Generate V1 JSON Rules
         run: |
           # 如果你的仓库里还没有放那个 python 脚本，这里会报错。
           # 确保 generate_sing_box_v1_rules.py 已经提交到了你仓库的根目录。
           python generate_sing_box_v1_rules.py
 
-      # 第五步：将变动（包含同步过来的官方新代码和新生成的 .v1.json）推送到你的专属兼容分支
+      # 第六步：将变动（包含同步过来的官方新代码和新生成的 .v1.json）推送到你的专属兼容分支
       - name: Push to sing-box-v1-compat branch
         run: |
           # 切换到一个干净的、以当前状态为准的 sing-box-v1-compat 分支
