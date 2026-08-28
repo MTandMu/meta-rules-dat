@@ -54,17 +54,44 @@ jobs:
           # 确保 generate_sing_box_v1_rules.py 已经提交到了你仓库的根目录。
           python generate_sing_box_v1_rules.py
 
-      # 第六步：将变动（包含同步过来的官方新代码和新生成的 .v1.json）推送到你的专属兼容分支
+      - name: Install sing-box 1.9.4 CLI
+        run: |
+          echo "📥 正在下载 sing-box 1.9.4 官方内核..."
+          curl -Lo sing-box.tar.gz https://github.com/SagerNet/sing-box/releases/download/v1.9.4/sing-box-1.9.4-linux-amd64.tar.gz
+          tar -xzf sing-box.tar.gz
+          # 将解压出来的 1.9.4 sing-box 执行文件移动到当前根目录并赋予执行权限
+          mv sing-box-1.9.4-linux-amd64/sing-box ./sing-box
+          chmod +x ./sing-box
+          echo "✅ sing-box 1.9.4 准备就绪："
+          ./sing-box version
+
+      # 第七步：【核心新增】利用 1.9.4 内核，将所有新生成的 .v1.json 转换为 V1 二进制 .srs
+      - name: Compile V1 JSON to SRS
+        run: |
+          echo "🚀 开始批量编译 V1 SRS 二进制文件..."
+          # 循环查找所有生成的 .v1.json 文件
+          find geo geo-lite -name "*.v1.json" | while read -r json_file; do
+            # 构造输出的 srs 文件路径，例如：cn.v1.json -> cn.v1.srs
+            srs_file="${json_file%.json}.srs"
+            # 使用 1.9.4 内核执行编译命令
+            ./sing-box rule-set compile --output "$srs_file" "$json_file"
+            # 编译完成后，为了保持仓库绝对纯净并减小体积，把临时的 .v1.json 删掉
+            # rm -f "$json_file"
+          done
+          # echo "✅ 批量编译完成，临时 JSON 已清理！"
+
+      # 第八步：将变动（包含同步过来的官方新代码和新生成的 .v1.json）推送到你的专属兼容分支
       - name: Push to sing-box-v1-compat branch
         run: |
           # 切换到一个干净的、以当前状态为准的 sing-box-v1-compat 分支
           # 如果该分支在远程已存在，它会覆盖；如果不存在，它会创建
           git checkout -b sing-box-v1-compat
 
-          # 🚀 【核心改动】在提交前，彻底将 Python 脚本从当前工作区和 Git 暂存区中移除
+          # 清理 Actions 运行时产生的内核工具文件，防止它们被推送到分支
+          rm -f sing-box sing-box.tar.gz
+          rm -rf sing-box-*-linux-amd64
           if [ -f "generate_sing_box_v1_rules.py" ]; then
             git rm -f generate_sing_box_v1_rules.py
-            echo "🗑️ 已将自动化脚本移出发布队列"
           fi
 
           # 检查是否有剩余的文件发生变化（即只有同步过来的规则和新生成的 .v1.json 文件）
