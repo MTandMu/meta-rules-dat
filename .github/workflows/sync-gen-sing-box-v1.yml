@@ -43,7 +43,7 @@ jobs:
       - name: Restore Python Script from origin
         run: |
           # 从你自己的 origin/sing 分支中单独把脚本文件检出到当前工作区
-          git checkout origin/master -- generate_sing_box_v1_rules.py
+          git checkout origin/master -- resources/generate_sing_box_v1_rules.py
           echo "✅ 成功从 origin/master 恢复脚本文件！"
 
       # 第四步：设置 Python 环境
@@ -55,9 +55,7 @@ jobs:
       # 第五步：运行你的 V1 规则生成脚本
       - name: Generate V1 JSON Rules
         run: |
-          # 如果你的仓库里还没有放那个 python 脚本，这里会报错。
-          # 确保 generate_sing_box_v1_rules.py 已经提交到了你仓库的根目录。
-          python generate_sing_box_v1_rules.py
+          python resources/generate_sing_box_v1_rules.py
 
       - name: Install sing-box 1.9.4 CLI
         run: |
@@ -95,9 +93,6 @@ jobs:
           # 清理 Actions 运行时产生的内核工具文件，防止它们被推送到分支
           rm -f sing-box sing-box.tar.gz
           rm -rf sing-box-*-linux-amd64
-          if [ -f "generate_sing_box_v1_rules.py" ]; then
-            git rm -f generate_sing_box_v1_rules.py
-          fi
 
           # 【核心大扫除】将当前工作区在 Git 里的所有追踪记录全部清空（相当于全盘暂存区删除）
           git rm -rf .
