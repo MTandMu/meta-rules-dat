@@ -22,6 +22,8 @@ mihomo：[meta branch](https://github.com/MetaCubeX/meta-rules-dat/tree/meta)
 
 sing-box: [sing branch](https://github.com/MetaCubeX/meta-rules-dat/tree/sing)
 
+sing-box(<=1.9.x): [sing-box v1 branch](https://github.com/mtandmu/meta-rules-dat/tree/sing-box-v1-compat)
+
 ## **country.mmdb,geoip.dat,geoip.db 内容**
 
 同 [Loyalsoldier/v2ray-rules-dat](https://github.com/Loyalsoldier/v2ray-rules-dat)
