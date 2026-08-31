@@ -2,9 +2,14 @@ name: Sync Rules and Generate V1 Compat
 
 on:
   schedule:
-    # 每天国际标准时间 04:00 (北京时间 12:00) 自动执行
-    - cron: '0 4 * * *'
-  workflow_dispatch: # 允许你在 GitHub 页面上点击按钮手动触发
+    - cron: '30 9 * * *'
+      timezone: "Asia/Shanghai"
+  workflow_dispatch:
+  push:
+    branches:
+      - sing-box-v1-compat
+    paths-ignore:
+      - "**/README.md"
 
 permissions:
   contents: write # 赋予 Actions 写入和推送代码到你仓库的权限
@@ -94,9 +99,14 @@ jobs:
             git rm -f generate_sing_box_v1_rules.py
           fi
 
+          # 【核心大扫除】将当前工作区在 Git 里的所有追踪记录全部清空（相当于全盘暂存区删除）
+          git rm -rf .
+
+          # 只 push *.v1.* 老版本文件
+          git add '**/*.v1.*'
+
           # 检查是否有剩余的文件发生变化（即只有同步过来的规则和新生成的 .v1.json 文件）
           if [ -n "$(git status --porcelain)" ]; then
-            git add .
             git commit -m "chore: 自动同步 MetaCubeX 官方更新并生成 v1 兼容规则集"
             # 使用 --force 强制推送到你指定的专属分支
             git push origin sing-box-v1-compat --force
