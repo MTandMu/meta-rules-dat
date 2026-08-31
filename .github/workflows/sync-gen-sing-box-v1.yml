@@ -38,8 +38,8 @@ jobs:
       - name: Restore Python Script from origin
         run: |
           # 从你自己的 origin/sing 分支中单独把脚本文件检出到当前工作区
-          git checkout origin/sing -- generate_sing_box_v1_rules.py
-          echo "✅ 成功从 origin/sing 恢复脚本文件！"
+          git checkout origin/master -- generate_sing_box_v1_rules.py
+          echo "✅ 成功从 origin/master 恢复脚本文件！"
 
       # 第四步：设置 Python 环境
       - name: Set up Python
